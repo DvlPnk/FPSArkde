@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\FPSArkde.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{B2079234-794F-40C5-8FE5-3A1AF91B80FB}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\FPSArkde.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\FPSArkdeEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <Filter Include="Config">
+      <UniqueIdentifier>{CE344C5E-3704-4982-B998-A3D14A202ECE}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\FPSArkde">
+      <UniqueIdentifier>{6D6C49B3-BE62-41C7-BDAE-00F81CD27A3A}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\FPSArkde\FPSArkde.Build.cs">
+      <Filter>Source\FPSArkde</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\FPSArkde\FPSArkde.cpp">
+      <Filter>Source\FPSArkde</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\FPSArkde\FPSArkde.h">
+      <Filter>Source\FPSArkde</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\FPSArkde\FPSArkdeGameModeBase.cpp">
+      <Filter>Source\FPSArkde</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\FPSArkde\FPSArkdeGameModeBase.h">
+      <Filter>Source\FPSArkde</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
