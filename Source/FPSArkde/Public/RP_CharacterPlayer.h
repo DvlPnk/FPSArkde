@@ -58,8 +58,6 @@ protected:
 
 	virtual void StopJumping() override;
 
-	virtual void MoveSlowly();
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -72,5 +70,4 @@ public:
 	void AddKey(FName NewKey);
 
 	bool HasKey(FName KeyTag);
-
 };

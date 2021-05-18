@@ -34,7 +34,6 @@ void ARP_CharacterPlayer::BeginPlay()
 	
 }
 
-
 // Called every frame
 void ARP_CharacterPlayer::Tick(float DeltaTime)
 {
@@ -65,7 +64,6 @@ void ARP_CharacterPlayer::MoveRight(float value)
 	AddMovementInput(GetActorRightVector() * value);
 }
 
-
 void ARP_CharacterPlayer::Jump()
 {
 	Super::Jump();
@@ -76,10 +74,6 @@ void ARP_CharacterPlayer::StopJumping()
 	Super::StopJumping();
 }
 
-void ARP_CharacterPlayer::MoveSlowly()
-{
-	//AddMovementInput(GetAc)
-}
 
 void ARP_CharacterPlayer::AddControllerPitchInput(float value)
 {
