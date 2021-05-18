@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RP_CharacterPlayer.generated.h"
 
+class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
@@ -16,9 +17,21 @@ class FPSARKDE_API ARP_CharacterPlayer : public ACharacter
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USpringArmComponent* SpringArmComponent_R; 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* FPSCameraComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCameraComponent* TPSCameraComponent_R;
+
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aiming")
+	bool bUseFirstPersonView;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aiming")
+	bool bUseTPersonView_R;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
 	bool bIsLookInversion;
@@ -26,6 +39,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
 	FName FPSCameraSocketName;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Key")
+	TArray<FName> DoorKeys;
 
 public:
 	// Sets default values for this character's properties
@@ -43,6 +58,8 @@ protected:
 
 	virtual void StopJumping() override;
 
+	virtual void MoveSlowly();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -51,5 +68,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void AddControllerPitchInput(float value) override;
+
+	void AddKey(FName NewKey);
+
+	bool HasKey(FName KeyTag);
 
 };
