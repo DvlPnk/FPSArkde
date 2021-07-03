@@ -8,7 +8,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-
+class ARP_Weapon;
 UCLASS()
 class FPSARKDE_API ARP_CharacterPlayer : public ACharacter
 {
@@ -42,10 +42,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Key")
 	TArray<FName> DoorKeys;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon");
+	TSubclassOf<ARP_Weapon> InitialWeaponClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Weapon");
+	ARP_Weapon* CurrentWeapon;
+
 public:
 	// Sets default values for this character's properties
 	ARP_CharacterPlayer();
 
+	virtual FVector GetPawnViewLocation() const override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,6 +65,12 @@ protected:
 	virtual void Jump() override;
 
 	virtual void StopJumping() override;
+
+	void StartWeaponAction();
+
+	void StopWeaponAction();
+
+	void CreateInitialWeapon();
 
 public:	
 	// Called every frame

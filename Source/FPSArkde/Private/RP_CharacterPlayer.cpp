@@ -4,7 +4,7 @@
 #include "RP_CharacterPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "Weapons/RP_Weapon.h"
 
 // Sets default values
 ARP_CharacterPlayer::ARP_CharacterPlayer()
@@ -27,11 +27,24 @@ ARP_CharacterPlayer::ARP_CharacterPlayer()
 	TPSCameraComponent_R->SetupAttachment(SpringArmComponent_R);
 }
 
+FVector ARP_CharacterPlayer::GetPawnViewLocation() const
+{
+	if(IsValid(FPSCameraComponent) && bUseFirstPersonView)
+	{
+		return FPSCameraComponent->GetComponentLocation();
+	}else if(IsValid(TPSCameraComponent_R) && !bUseFirstPersonView)
+	{
+		return TPSCameraComponent_R->GetComponentLocation();
+	}
+
+	return Super::GetPawnViewLocation();
+}
+
 // Called when the game starts or when spawned
 void ARP_CharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CreateInitialWeapon();
 }
 
 // Called every frame
@@ -52,6 +65,9 @@ void ARP_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARP_CharacterPlayer::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARP_CharacterPlayer::StopJumping);
+
+	PlayerInputComponent->BindAction("WeaponAction", IE_Pressed, this, &ARP_CharacterPlayer::StartWeaponAction);
+	PlayerInputComponent->BindAction("WeaponAction", IE_Released, this, &ARP_CharacterPlayer::StopWeaponAction);
 }
 
 void ARP_CharacterPlayer::MoveForward(float value)
@@ -72,6 +88,36 @@ void ARP_CharacterPlayer::Jump()
 void ARP_CharacterPlayer::StopJumping()
 {
 	Super::StopJumping();
+}
+
+void ARP_CharacterPlayer::StartWeaponAction()
+{
+	if(IsValid(CurrentWeapon))
+	{
+		CurrentWeapon->StartAction();
+	}
+}
+
+void ARP_CharacterPlayer::StopWeaponAction()
+{
+	if (IsValid(CurrentWeapon))
+	{
+		CurrentWeapon->StopAction();
+	}
+}
+
+void ARP_CharacterPlayer::CreateInitialWeapon()
+{
+	if (IsValid(InitialWeaponClass))
+	{
+		CurrentWeapon = GetWorld()->SpawnActor<ARP_Weapon>(InitialWeaponClass, GetActorLocation(), GetActorRotation());
+
+		if (IsValid(CurrentWeapon))
+		{
+			CurrentWeapon->SetCharacterOwner(this);
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		}
+	}
 }
 
 
