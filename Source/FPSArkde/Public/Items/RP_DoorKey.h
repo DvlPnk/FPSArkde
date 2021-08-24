@@ -26,8 +26,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key")
 	FName KeyTag;
 
-public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Key")
+	float XPValue;
 
+public:
 
 	ARP_DoorKey();
 

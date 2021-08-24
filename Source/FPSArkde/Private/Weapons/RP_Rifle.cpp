@@ -8,6 +8,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "FPSArkde/FPSArkde.h"
 
 ARP_Rifle::ARP_Rifle()
 {
@@ -39,7 +40,7 @@ void ARP_Rifle::StartAction()
 		FVector TraceEndPoint = TraceEnd;
 
 		FHitResult HitResult;
-		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, ECC_Visibility, QueryParams);
+		bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeLocation, TraceEnd, COLLISION_WEAPON, QueryParams);
 		if(bHit)
 		{
 			AActor* HitActor = HitResult.GetActor();

@@ -7,11 +7,11 @@
 ;
 ARP_DoorKey::ARP_DoorKey()
 {
-	KeyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("KyeMeshComponent"));
+	KeyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("KeyMeshComponent"));
 	KeyMeshComponent->SetupAttachment(RootComponent);
 	KeyMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-
+	XPValue = 40.0f;
 	KeyTag = "Key_A";
 }
 
