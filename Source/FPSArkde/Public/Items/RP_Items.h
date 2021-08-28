@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RP_Items.generated.h"
 
+class ARP_GameMode;
 class USphereComponent;
 class ARP_CharacterPlayer;
 
@@ -19,7 +20,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* MainColliderComponent;
 
+protected:
 
+	UPROPERTY(BlueprintReadOnly)
+	ARP_GameMode* GameModeReference;
+	
 public:	
 	// Sets default values for this actor's properties
 	ARP_Items();

@@ -6,9 +6,11 @@
 #include "RP_CharacterPlayer.h"
 #include "RP_Enemy.generated.h"
 
+class URP_EnemyHealthBar;
 class ARP_AIController;
 class ARP_Items;
 class ARP_PathEnemy;
+class UWidgetComponent;
 /**
  * 
  */
@@ -23,8 +25,16 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UWidgetComponent* WidgetHealthBarComponent;
+	
+protected:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Navegation Path")
 	bool bLoopPath;
+
+	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	bool bIsShowingHealthBar;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Navegation Path")
 	int DirectionIndex;
@@ -46,6 +56,11 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "AI|Controller")
 	ARP_AIController* MyAIController;
+
+	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	URP_EnemyHealthBar* EnemyHealthBar;
+
+	FTimerHandle TimerHandle_HideHealthBar;
 
 	
 protected:
@@ -72,5 +87,8 @@ public:
 	int GetDirectionIndex() { return DirectionIndex; };
 	
 	float GetWatingTime() { return WaitingTimeOnPathPoint; };
+
+	void ShowHealthBar();
+	void HideHealthBar();
 	
 };

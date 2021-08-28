@@ -15,6 +15,9 @@ class UAnimMontage;
 class UAnimInstance;
 class URP_HealthComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUltimateUpdateSignature, float, CurrentUltimateXP, float, MaxUltimateXP);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUltimateStatusSignature, bool, bIsAvailable);
+
 UENUM(Blueprintable)
 enum class ERP_CharacterType : uint8
 {
@@ -30,120 +33,120 @@ class FPSARKDE_API ARP_CharacterPlayer : public ACharacter
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USpringArmComponent* SpringArmComponent_R; 
+		USpringArmComponent* SpringArmComponent_R;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCameraComponent* FPSCameraComponent;
+		UCameraComponent* FPSCameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCameraComponent* TPSCameraComponent_R;
+		UCameraComponent* TPSCameraComponent_R;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Componets")
-	UCapsuleComponent* MeleeDetectorComponent;
+		UCapsuleComponent* MeleeDetectorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	URP_HealthComponent* HealthComponent;
+		URP_HealthComponent* HealthComponent;
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aiming")
-	bool bUseFirstPersonView;
+		bool bUseFirstPersonView;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Aiming")
-	bool bUseTPersonView_R;
+		bool bUseTPersonView_R;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
-	bool bIsLookInversion;
+		bool bIsLookInversion;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Melee")
-	bool bIsDoingMelee;
+		bool bIsDoingMelee;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	bool bCanUseWeapon;
+		bool bCanUseWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
-	bool bCanMakeCombos;
+		bool bCanMakeCombos;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Melee")
-	bool bIsComboEnable;
+		bool bIsComboEnable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game Over")
-	bool bHasToDestroy;
+		bool bHasToDestroy;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate")
-	bool bCanUseUltimate;
+		bool bCanUseUltimate;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate")
-	bool bIsUsingUltimate;
+		bool bIsUsingUltimate;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate")
-	bool bUltimateWithTicks;
-	
+		bool bUltimateWithTicks;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee")
-	float MeleeDamage;
+		float MeleeDamage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Melee", meta = (EditCondition = bCanMakeCombos, ClampMin = 1.0, UIMin = 1.0))
-	float MaxComboMultiplier;
+		float MaxComboMultiplier;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Melee", meta = (EditCondition = bCanMakeCombos, ClampMin = 1.0, UIMin = 1.0))
-	float CurrentComboMultipier;
+		float CurrentComboMultipier;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate", meta = (ClampMin = 0.0, UIMin = 0.0))
-	float MaxUltimateXP;
+		float MaxUltimateXP;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate")
-	float CurrentUltimateXP;
+		float CurrentUltimateXP;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Time", meta = (ClampMin = 0.0, UIMin = 0.0))
-	float MaxUltimateDuration;
+		float MaxUltimateDuration;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate|Time")
-	float CurrentUltimateDuration;
+		float CurrentUltimateDuration;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Time")
-	float UltimateFreq;
+		float UltimateFreq;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities")
-	float UltimateWalkSpeed;
+		float UltimateWalkSpeed;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate|Abilities")
-	float NormalWalkSpeed;
+		float NormalWalkSpeed;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities")
-	float UltimatePlayRate;
-	
+		float UltimatePlayRate;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate|Abilities")
-	float PlayRate;
+		float PlayRate;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities")
-	float UltimateShootFreq;
+		float UltimateShootFreq;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Aiming")
-	FName FPSCameraSocketName;
+		FName FPSCameraSocketName;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Melee")
-	FName MeleeSocketName;
+		FName MeleeSocketName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Levels")
-	FName MainMenuMapName;
+		FName MainMenuMapName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Key")
-	TArray<FName> DoorKeys;
+		TArray<FName> DoorKeys;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon");
 	TSubclassOf<ARP_Weapon> InitialWeaponClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	ERP_CharacterType CharacterType;
+		ERP_CharacterType CharacterType;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Weapon");
 	ARP_Weapon* CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
-	UAnimMontage* MeleeMontage;
+		UAnimMontage* MeleeMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
-	UAnimMontage* UltimateMontage;
+		UAnimMontage* UltimateMontage;
 
 	UAnimInstance* MyAnimInstance;
 
@@ -156,6 +159,14 @@ protected:
 	FTimerHandle TimerHandle_AutomaticShoot;
 
 	FTimerHandle TimerHandle_BeginUltimateBehavior;
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUltimateUpdateSignature OnUltimateUpdateDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUltimateStatusSignature OnUltimateStatusDelegate;
 
 public:
 	// Sets default values for this character's properties

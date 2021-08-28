@@ -5,12 +5,14 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/RP_HealthComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Core/RP_GameInstance.h"
 #include "Enemy/Controller/RP_AIController.h"
 #include "Weapons/RP_Rifle.h"
 #include "Items/RP_Items.h"
 #include "Perception/AISense_Damage.h"
 #include "Core/RP_GameInstance.h"
+#include "UI/Enemies/RP_EnemyHealthBar.h"
 
 ARP_Enemy::ARP_Enemy()
 {
@@ -19,6 +21,10 @@ ARP_Enemy::ARP_Enemy()
 	WaitingTimeOnPathPoint = 1.0f;
 	XPValue = 20.0f;
 	LootProbability = 100.0f;
+
+	WidgetHealthBarComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetHealthBarComponent"));
+	WidgetHealthBarComponent->SetupAttachment(RootComponent);
+	
 }
 
 void ARP_Enemy::BeginPlay()
@@ -29,6 +35,19 @@ void ARP_Enemy::BeginPlay()
 
 	HealthComponent->OnDeadDelegate.AddDynamic(this, &ARP_Enemy::GiveXP);
 	HealthComponent->OnHealthChangeDelegate.AddDynamic(this, &ARP_Enemy::HealthChange);
+
+	UUserWidget* WidgetObject = WidgetHealthBarComponent->GetUserWidgetObject();
+	
+	if(IsValid(WidgetObject))
+	{
+		EnemyHealthBar = Cast<URP_EnemyHealthBar>(WidgetObject);
+
+		if(IsValid(EnemyHealthBar))
+		{
+			HealthComponent->OnHealthUpdateDelegate.AddDynamic(EnemyHealthBar, &URP_EnemyHealthBar::UpdateHealth);
+			HideHealthBar();
+		}
+	}
 }
 
 void ARP_Enemy::GiveXP(AActor* DamageCauser)
@@ -65,6 +84,15 @@ void ARP_Enemy::HealthChange(URP_HealthComponent* CurrentHealthComponent, AActor
 	{
 		return;
 	}
+
+	if(bIsShowingHealthBar)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_HideHealthBar);
+	}else
+	{
+		ShowHealthBar();
+	}
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_HideHealthBar, this, &ARP_Enemy::HideHealthBar, 1.0f, false);
 	
 	if(CurrentHealthComponent->IsDead())
 	{
@@ -74,6 +102,8 @@ void ARP_Enemy::HealthChange(URP_HealthComponent* CurrentHealthComponent, AActor
 		{
 			GameInstaceReference->AddEnemieDefeatedToCounter();
 		}
+
+		HideHealthBar();
 	}
 	else
 	{
@@ -103,4 +133,16 @@ bool ARP_Enemy::TrySpawnLoot()
 	}
 
 	return true;
+}
+
+void ARP_Enemy::ShowHealthBar()
+{
+	bIsShowingHealthBar = true;
+	EnemyHealthBar->SetVisibility(ESlateVisibility::Visible);
+}
+
+void ARP_Enemy::HideHealthBar()
+{
+	bIsShowingHealthBar = false;
+	EnemyHealthBar->SetVisibility(ESlateVisibility::Hidden);
 }

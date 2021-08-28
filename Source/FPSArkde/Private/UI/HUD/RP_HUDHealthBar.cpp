@@ -27,5 +27,5 @@ void URP_HUDHealthBar::InitializeWidget()
 void URP_HUDHealthBar::UpdateHealth(float CurrentHealth, float MaxHealth)
 {
 	HealthPercent = CurrentHealth / MaxHealth;
-	HealthColor = FMath::Lerp(FullHealthColor, EmptyHealthColor, HealthPercent);
+	HealthColor = FMath::Lerp(EmptyHealthColor, FullHealthColor, HealthPercent);
 }

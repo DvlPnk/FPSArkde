@@ -4,6 +4,7 @@
 #include "Items/RP_Items.h"
 #include "Components/SphereComponent.h"
 #include "RP_CharacterPlayer.h"
+#include "Core/RP_GameMode.h"
 
 // Sets default values
 ARP_Items::ARP_Items()
@@ -24,7 +25,8 @@ ARP_Items::ARP_Items()
 void ARP_Items::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GameModeReference = Cast<ARP_GameMode>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame

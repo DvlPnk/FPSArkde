@@ -105,7 +105,7 @@ void ARP_GameMode::GameOver(ARP_CharacterPlayer* Character)
 
 	OnGameOverDelegate.Broadcast();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_BackToMainMenu, this, &ARP_GameMode::BackToMainMenu, 4.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_BackToMainMenu, this, &ARP_GameMode::BackToMainMenu, 3.0f, false);
 	
 	BP_GameOver(Character);
 }

@@ -376,9 +376,12 @@ void ARP_CharacterPlayer::GainUltimateXP(float XPGained)
 	}
 
 	CurrentUltimateXP = FMath::Clamp(CurrentUltimateXP + XPGained, 0.0f, MaxUltimateXP);
+	OnUltimateUpdateDelegate.Broadcast(CurrentUltimateXP, MaxUltimateXP);
+	
 	if(CurrentUltimateXP == MaxUltimateXP)
 	{
 		bCanUseUltimate = true;
+		OnUltimateStatusDelegate.Broadcast(true);
 	}
 
 	BP_GainUltimateXP(XPGained);
@@ -387,11 +390,14 @@ void ARP_CharacterPlayer::GainUltimateXP(float XPGained)
 void ARP_CharacterPlayer::UpdateUltimateDuration(float Value)
 {
 	CurrentUltimateDuration = FMath::Clamp(CurrentUltimateDuration + Value, 0.0f, MaxUltimateDuration);
+	OnUltimateUpdateDelegate.Broadcast(MaxUltimateDuration - CurrentUltimateDuration, MaxUltimateDuration);
 	BP_UpdateUltimateDuration(Value);
 
 	if(CurrentUltimateDuration == MaxUltimateDuration)
 	{
 		bIsUsingUltimate = false;
+		bCanUseUltimate = false;
+		OnUltimateStatusDelegate.Broadcast(false);
 
 		GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 		PlayRate = 1.0f;
@@ -401,6 +407,7 @@ void ARP_CharacterPlayer::UpdateUltimateDuration(float Value)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Ultimate);
 		}
+		CurrentUltimateXP = 0.0f;
 		
 		BP_StopUltimate();
 	}

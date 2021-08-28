@@ -14,6 +14,7 @@ URP_GameInstance::URP_GameInstance()
 void URP_GameInstance::AddEnemieDefeatedToCounter()
 {
 	EnemiesDefeatedCounter++;
+	OnEnemyKilledDelegate.Broadcast(EnemiesDefeatedCounter);
 	BP_AddEnemieDefeatedToCounter();
 }
 
