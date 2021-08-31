@@ -3,14 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "Enemy/RP_Enemy.h"
 #include "GameFramework/GameModeBase.h"
 #include "RP_GameMode.generated.h"
 
+class USoundCue;
 class ARP_CharacterPlayer;
 class ARP_SpectatingCamera;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnKeyAddedSignature, FName, KeyTag);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStateChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAlertModeChangeSignature, bool, bIsAlert);
 
 UCLASS()
 class FPSARKDE_API ARP_GameMode : public AGameModeBase
@@ -18,6 +22,9 @@ class FPSARKDE_API ARP_GameMode : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level")
+	bool bIsAlertMode;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spectating Camera")
 	float SpectatingBlendTime;
@@ -31,7 +38,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Spectating Camera")
 	ARP_SpectatingCamera* GameOverCamera;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Music")
+	USoundCue* VictoryMusic;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Music")
+	USoundCue* GameOverMusic;
+	
 	FTimerHandle TimerHandle_BackToMainMenu;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Level")
+	TArray<ARP_Enemy*> LevelEnemies;
 
 public:
 
@@ -46,6 +62,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnGameStateChange OnGameOverDelegate;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAlertModeChangeSignature OnAlertModeChangeDelegate;
+	 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,7 +73,7 @@ protected:
 
 	void MoveCameraSpectatingPoint(ARP_CharacterPlayer* Character, ARP_SpectatingCamera* SpectatingCamera);
 
-	
+	void PlayMusic(USoundCue* MusicCue);
 	
 public:
 
@@ -68,6 +87,8 @@ public:
 	void GameOver(ARP_CharacterPlayer* Character);
 
 	void BackToMainMenu();
+
+	void CheckAlertMode();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void BP_Victory(ARP_CharacterPlayer* Character);

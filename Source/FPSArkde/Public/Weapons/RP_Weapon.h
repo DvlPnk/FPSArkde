@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RP_Weapon.generated.h"
 
+class USoundCue;
 class UDamageType;
 class ACharacter;
 
@@ -27,6 +28,9 @@ protected:
 	TSubclassOf<UDamageType> DamageType;
 
 	ACharacter* CurrentOwnerCharacter;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	USoundCue* ShotSound;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -50,5 +54,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCharacterOwner(ACharacter* NewOwner);
+
+	UFUNCTION(BlueprintCallable)
+	void PlaySound(USoundCue* SoundCue, bool bIs3D = false, FVector SoundLocation = FVector::ZeroVector);
 	
 };

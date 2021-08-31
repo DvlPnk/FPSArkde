@@ -8,6 +8,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "RP_SpectatingCamera.h"
+#include "Sound/SoundCue.h"
 
 ARP_GameMode::ARP_GameMode()
 {
@@ -18,6 +19,25 @@ void ARP_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupSpectatingCameras();
+
+	TArray<AActor*> EnemyActors;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARP_Enemy::StaticClass(), EnemyActors);
+	for(AActor* EnemyActor : EnemyActors)
+	{
+		if(!IsValid(EnemyActor))
+		{
+			continue;
+		}
+
+		ARP_Enemy* NewEnemy = Cast<ARP_Enemy>(EnemyActor);
+
+		if(IsValid(NewEnemy))
+		{
+			LevelEnemies.AddUnique(NewEnemy);
+		}
+		
+	}
 }
 
 void ARP_GameMode::SetupSpectatingCameras()
@@ -65,6 +85,16 @@ void ARP_GameMode::MoveCameraSpectatingPoint(ARP_CharacterPlayer* Character, ARP
 	}
 }
 
+void ARP_GameMode::PlayMusic(USoundCue* MusicCue)
+{
+	if(!IsValid(MusicCue))
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySound2D(GetWorld(), MusicCue);
+}
+
 void ARP_GameMode::AddKeyToCharacter(ARP_CharacterPlayer* KeyOwner, FName KeyTag)
 {
 	if(IsValid(KeyOwner))
@@ -81,6 +111,8 @@ void ARP_GameMode::Victory(ARP_CharacterPlayer* Character)
 	MoveCameraSpectatingPoint(Character, VictoryCamera);
 	OnVictoryDelegate.Broadcast();
 
+	PlayMusic(VictoryMusic);
+
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_BackToMainMenu, this, &ARP_GameMode::BackToMainMenu, 3.0f, false);
 	
 	BP_Victory(Character);
@@ -89,7 +121,7 @@ void ARP_GameMode::Victory(ARP_CharacterPlayer* Character)
 
 void ARP_GameMode::GameOver(ARP_CharacterPlayer* Character)
 {
-	Character->GetMovementComponent()->StopMovementImmediately();
+	Character->GetMovementComponent()->StopMovementImmediately(); 
 	Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if(Character->HasToDestroy())
@@ -105,12 +137,39 @@ void ARP_GameMode::GameOver(ARP_CharacterPlayer* Character)
 
 	OnGameOverDelegate.Broadcast();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle_BackToMainMenu, this, &ARP_GameMode::BackToMainMenu, 4.0f, false);
-	
+	PlayMusic(GameOverMusic);
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_BackToMainMenu, this, &ARP_GameMode::BackToMainMenu, 8.0f, false);
+
 	BP_GameOver(Character);
 }
 
 void ARP_GameMode::BackToMainMenu()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), MainManuMapName);
+}
+
+void ARP_GameMode::CheckAlertMode()
+{
+	bool bEnemyInAlertMode = false;
+
+	for(ARP_Enemy* EnemyOnLevel : LevelEnemies)
+	{
+		if(!IsValid(EnemyOnLevel))
+		{
+			continue;
+		}
+
+		if(EnemyOnLevel->GetIsAlert())
+		{
+			bEnemyInAlertMode = true;
+			break;
+		}
+	}
+
+	if(bIsAlertMode != bEnemyInAlertMode)
+	{
+		bIsAlertMode = bEnemyInAlertMode;
+		OnAlertModeChangeDelegate.Broadcast(bIsAlertMode);
+	}
 }

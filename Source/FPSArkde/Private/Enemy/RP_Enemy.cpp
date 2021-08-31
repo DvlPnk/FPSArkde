@@ -12,6 +12,7 @@
 #include "Items/RP_Items.h"
 #include "Perception/AISense_Damage.h"
 #include "Core/RP_GameInstance.h"
+#include "Core/RP_GameMode.h"
 #include "UI/Enemies/RP_EnemyHealthBar.h"
 
 ARP_Enemy::ARP_Enemy()
@@ -96,6 +97,7 @@ void ARP_Enemy::HealthChange(URP_HealthComponent* CurrentHealthComponent, AActor
 	
 	if(CurrentHealthComponent->IsDead())
 	{
+		MyAIController->DeactivateAIPerception();
 		MyAIController->UnPossess();
 
 		if(IsValid(GameInstaceReference))
@@ -103,6 +105,8 @@ void ARP_Enemy::HealthChange(URP_HealthComponent* CurrentHealthComponent, AActor
 			GameInstaceReference->AddEnemieDefeatedToCounter();
 		}
 
+		SetIsAlert(false);
+		
 		HideHealthBar();
 	}
 	else
@@ -145,4 +149,13 @@ void ARP_Enemy::HideHealthBar()
 {
 	bIsShowingHealthBar = false;
 	EnemyHealthBar->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ARP_Enemy::SetIsAlert(bool bValue)
+{
+	bIsAlert = bValue;
+	if(IsValid(GameModeReference))
+	{
+		GameModeReference->CheckAlertMode();
+	}
 }

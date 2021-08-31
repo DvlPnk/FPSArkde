@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "RP_Bot.generated.h"
 
+class USoundCue;
 class URP_GameInstance;
 class ARP_Items;
 class USphereComponent;
@@ -13,6 +14,7 @@ class URP_HealthComponent;
 class ARP_CharacterPlayer;
 class UStaticMeshComponent;
 class ARP_BotSpawner;
+class UAudioComponent;
 
 UCLASS()
 class FPSARKDE_API ARP_Bot : public APawn
@@ -29,6 +31,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	URP_HealthComponent* HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UAudioComponent* TimerSoundComponent;
+	
 
 protected:
 
@@ -79,6 +85,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Spawner")
 	ARP_BotSpawner* MySpawner;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	USoundCue* ExplosionSound;
 	
 public:
 	// Sets default values for this pawn's properties
@@ -108,6 +117,10 @@ protected:
 	void BP_GiveXP(AActor* DamageCauser);
 
 	bool TrySpawnLoot();
+
+	void PlayTimerSound();
+
+	void PlayExplosionSound();
 	
 public:	
 	// Called every frame

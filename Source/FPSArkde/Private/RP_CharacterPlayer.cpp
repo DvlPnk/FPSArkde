@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Weapons/RP_Weapon.h"
 #include "Animation/AnimMontage.h"
+#include "Components/AudioComponent.h"
 #include "Components/RP_HealthComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Core/RP_GameInstance.h"
@@ -14,6 +15,8 @@
 #include "FPSArkde/FPSArkde.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ARP_CharacterPlayer::ARP_CharacterPlayer()
@@ -34,12 +37,12 @@ ARP_CharacterPlayer::ARP_CharacterPlayer()
 	bUltimateWithTicks = true;
 	UltimateFreq = 0.5f;
 	UltimateWalkSpeed = 1400.0f;
+	SlowWalkSpeed = 600.0f;
 	UltimatePlayRate = 1.5f;
 	PlayRate = 1.0f;
 	UltimateShootFreq = 0.25f;
 
 	MainMenuMapName = "MainMenuMap";
-	
 	
 	FPSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FPSCameraComponent"));
 	FPSCameraComponent->bUsePawnControlRotation = true;
@@ -59,6 +62,12 @@ ARP_CharacterPlayer::ARP_CharacterPlayer()
 	MeleeDetectorComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	HealthComponent = CreateDefaultSubobject<URP_HealthComponent>(TEXT("HealthComponent"));
+
+	StepSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("StepSoundComponent"));
+	StepSoundComponent->SetupAttachment(RootComponent);
+
+	VoiceSoundComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("VoiceSoundComponent"));
+	VoiceSoundComponent->SetupAttachment(RootComponent);
 	
 }
 
@@ -125,6 +134,9 @@ void ARP_CharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARP_CharacterPlayer::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARP_CharacterPlayer::StopJumping);
 
+	PlayerInputComponent->BindAction("Walk", IE_Pressed, this, &ARP_CharacterPlayer::StartWalking);
+	PlayerInputComponent->BindAction("Walk", IE_Released, this, &ARP_CharacterPlayer::StopWalking);
+
 	PlayerInputComponent->BindAction("WeaponAction", IE_Pressed, this, &ARP_CharacterPlayer::StartWeaponAction);
 	PlayerInputComponent->BindAction("WeaponAction", IE_Released, this, &ARP_CharacterPlayer::StopWeaponAction);
 
@@ -154,6 +166,18 @@ void ARP_CharacterPlayer::Jump()
 void ARP_CharacterPlayer::StopJumping()
 {
 	Super::StopJumping();
+}
+
+void ARP_CharacterPlayer::StartWalking()
+{
+	GetCharacterMovement()->MaxWalkSpeed = SlowWalkSpeed;
+	BP_StartWalking();
+}
+
+void ARP_CharacterPlayer::StopWalking()
+{
+	GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
+	BP_StopWalking();
 }
 
 void ARP_CharacterPlayer::StartWeaponAction()
@@ -242,10 +266,7 @@ void ARP_CharacterPlayer::StartMelee()
 
 void ARP_CharacterPlayer::StopMelee()
 {
-	if (IsValid(MyAnimInstance))
-	{
-
-	}
+	
 }
 
 void ARP_CharacterPlayer::StartUltimate()
@@ -257,6 +278,8 @@ void ARP_CharacterPlayer::StartUltimate()
 		bIsUsingUltimate = true;
 
 		bCanUseWeapon = false;
+
+		PlayVoiceSound(UltimateSound);
 		
 		if(IsValid(MyAnimInstance) && IsValid(UltimateMontage))
 		{
@@ -316,9 +339,18 @@ void ARP_CharacterPlayer::MakeMeleeDamage(UPrimitiveComponent* OverlappedCompone
 void ARP_CharacterPlayer::OnHealthChange(URP_HealthComponent* CurrentHealthComponent, AActor* DamagedActor, float Damage,
 	const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	if(HealthComponent->IsDead() && GetCharacterType() == ERP_CharacterType::CharacterType_Player)
+
+	if(!HealthComponent->IsDead())
 	{
-		if(IsValid(GameModeReference))
+		PlayVoiceSound(HurtSound);
+	}
+	
+	if(HealthComponent->IsDead())
+	{
+
+		PlayVoiceSound(DeadSound);
+		
+		if(IsValid(GameModeReference) && GetCharacterType() == ERP_CharacterType::CharacterType_Player)
 		{
 			GameModeReference->GameOver(this);
 		}
@@ -430,4 +462,20 @@ void ARP_CharacterPlayer::BeginUltimateBehavior()
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Ultimate, this, &ARP_CharacterPlayer::UpdateUltimateDurationWithTimer, UltimateFreq, true);
 	}
 	
+}
+
+void ARP_CharacterPlayer::PlayStepSound()
+{
+	StepSoundComponent->Play();
+}
+
+void ARP_CharacterPlayer::PlayVoiceSound(USoundCue* VoiceSound)
+{
+	if(!IsValid(VoiceSound))
+	{
+		return;
+	}
+
+	VoiceSoundComponent->SetSound(VoiceSound);
+	VoiceSoundComponent->Play();
 }

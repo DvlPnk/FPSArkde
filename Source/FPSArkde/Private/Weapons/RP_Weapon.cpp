@@ -3,6 +3,8 @@
 
 #include "Weapons/RP_Weapon.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 // Sets default values
 ARP_Weapon::ARP_Weapon()
 {
@@ -27,6 +29,7 @@ void ARP_Weapon::Tick(float DeltaTime)
 
 void ARP_Weapon::StartAction()
 {
+	PlaySound(ShotSound);
 	BP_StartAction();
 }
 
@@ -43,5 +46,23 @@ void ARP_Weapon::SetCharacterOwner(ACharacter* NewOwner)
 		CurrentOwnerCharacter = NewOwner;
 	}
 	
+}
+
+void ARP_Weapon::PlaySound(USoundCue* SoundCue, bool bIs3D, FVector SoundLocation)
+{
+	
+	if(!IsValid(SoundCue))
+	{
+		return;
+	}
+
+	if(bIs3D)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundCue, SoundLocation);
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), SoundCue);
+	}
 }
 

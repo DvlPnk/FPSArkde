@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RP_CharacterPlayer.generated.h"
 
+class USoundCue;
 class URP_GameInstance;
 class ARP_GameMode;
 class USpringArmComponent;
@@ -14,6 +15,7 @@ class ARP_Weapon;
 class UAnimMontage;
 class UAnimInstance;
 class URP_HealthComponent;
+class UAudioComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUltimateUpdateSignature, float, CurrentUltimateXP, float, MaxUltimateXP);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUltimateStatusSignature, bool, bIsAvailable);
@@ -41,11 +43,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UCameraComponent* TPSCameraComponent_R;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Componets")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		UCapsuleComponent* MeleeDetectorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		URP_HealthComponent* HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UAudioComponent* StepSoundComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		UAudioComponent* VoiceSoundComponent;
 
 protected:
 
@@ -112,6 +120,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Ultimate|Abilities")
 		float NormalWalkSpeed;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+		float SlowWalkSpeed;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ultimate|Abilities")
 		float UltimatePlayRate;
 
@@ -160,6 +171,15 @@ protected:
 
 	FTimerHandle TimerHandle_BeginUltimateBehavior;
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Audio")
+	USoundCue* HurtSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	USoundCue* DeadSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	USoundCue* UltimateSound;
+
 public:
 
 	UPROPERTY(BlueprintAssignable)
@@ -187,6 +207,10 @@ protected:
 	virtual void Jump() override;
 
 	virtual void StopJumping() override;
+
+	void StartWalking();
+
+	void StopWalking();
 
 	void StartWeaponAction();
 
@@ -250,6 +274,10 @@ public:
 
 	URP_HealthComponent* GetHealthComponent() { return HealthComponent; };
 
+	void PlayStepSound();
+
+	void PlayVoiceSound(USoundCue* VoiceSound);
+
 protected:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -263,5 +291,11 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void BP_UpdateUltimateDuration(float Value);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void BP_StartWalking();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+		void BP_StopWalking();
 	
 };
