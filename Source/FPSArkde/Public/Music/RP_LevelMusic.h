@@ -25,6 +25,8 @@ protected:
 
 protected:
 
+	bool bCurrentAlert;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Music")
 	FName AlertParamName;
 

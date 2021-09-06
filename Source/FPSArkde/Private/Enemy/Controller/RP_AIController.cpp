@@ -62,15 +62,14 @@ void ARP_AIController::UpdateSenses(const TArray<AActor*>& UpdatedActors)
 		{
 			for(int i=0; i < PerceptionInfo.LastSensedStimuli.Num(); i++)
 			{
-				bool bCanSeePlayer = PerceptionInfo.LastSensedStimuli[i].WasSuccessfullySensed();
 				switch (i)
 				{
 				case 0:
-					MyBlackBoard->SetValueAsBool(CanSeePlayerParameterName, bCanSeePlayer);
+					MyBlackBoard->SetValueAsBool(CanSeePlayerParameterName, PerceptionInfo.LastSensedStimuli[i].WasSuccessfullySensed());
 
 					if(IsValid(MyEnemy))
 					{
-						MyEnemy->SetIsAlert(bCanSeePlayer);
+						MyEnemy->SetIsAlert(PerceptionInfo.LastSensedStimuli[i].WasSuccessfullySensed());
 					}
 					
 					break;

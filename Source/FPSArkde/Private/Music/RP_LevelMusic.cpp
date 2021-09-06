@@ -47,5 +47,6 @@ void ARP_LevelMusic::StopLevelMusic()
 void ARP_LevelMusic::ChangeLevelMusic(bool bIsAlert)
 {
 	MusicAudioComponent->SetBoolParameter(AlertParamName, bIsAlert);
+	
 }
 
